@@ -6,7 +6,7 @@ The purpose of this lab is to expose you to some of the prevailing ways to write
 1. We assume that you have completed pre-lab 1, so your UPPMAX account etc are in order.
 2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
          
-         singularity run /proj/g2020014/nobackup/private/container.sif ./downloadmnist.py
+       singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
 Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv`flag enabling GPU support), that is fully natural.
 
 ## Exploring the original code
@@ -30,12 +30,12 @@ First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/
 	   UserId=nettel(40173) GroupId=nobody(43007) MCS_label=N/A
 	   Priority=100000 Nice=0 Account=g2020014 QOS=normal WCKey=*
 	   JobState=COMPLETED Reason=None Dependency=(null)
-	   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 	ExitCode=0:0
+	   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
 	   RunTime=00:00:28 TimeLimit=00:59:00 TimeMin=N/A
 	   SubmitTime=2020-05-24T19:33:24 EligibleTime=2020-05-24T19:33:24
 	   AccrueTime=2020-05-24T19:33:24
 	   StartTime=2020-05-24T19:33:25 EndTime=2020-05-24T19:33:53 Deadline=N/A
-	   SuspendTime=None SecsPreSuspend=0 	LastSchedEval=2020-05-24T19:33:25
+	   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2020-05-24T19:33:25
 	   Partition=devcore AllocNode:Sid=rackham2:20464
 	   ReqNodeList=(null) ExcNodeList=(null)
 	   NodeList=s1

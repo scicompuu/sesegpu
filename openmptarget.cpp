@@ -39,6 +39,7 @@ int main()
 	  }
       }
   }
+
   auto firstend = chrono::steady_clock::now();
   int maxi = 0;
   int maxj = 0;
@@ -53,6 +54,7 @@ int main()
 	    }
 	}
     }
+
   auto secondend = chrono::steady_clock::now();
   
   std::cout << "First pass, in microseconds : " << chrono::duration_cast<chrono::microseconds>(firstend-computestart).count() << std::endl;

@@ -79,8 +79,13 @@ int main()
 	printf("Cuda error %d reported: %s\n", e, cudaGetErrorString(e));
   }
 
-
   dowork<<<1,1>>>(indexeddivergence, elems, localdata, divergence);
+  e = cudaPeekAtLastError();
+  if (e)
+  {
+	printf("Cuda error %d reported: %s\n", e, cudaGetErrorString(e));
+  }
+
   e = cudaDeviceSynchronize();
   if (e)
   {

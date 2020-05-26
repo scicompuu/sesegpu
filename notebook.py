@@ -16,7 +16,7 @@ def find_free_port():
 
 ports = [str(find_free_port()) for _ in range(4)]
 
-if sys.argv.contains("--"):
+if "--" not in sys.argv:
     firstargs = sys.argv[1:]
     secondargs = []
 else:

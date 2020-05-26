@@ -7,7 +7,7 @@ The purpose of this lab is to get your user environment set up, train a simple d
 2. Log in to your UPPMAX account on Rackham. In this lab, we will use the Snowy cluster, but it is accessed through the Rackham login nodes. Instructions can be found at [https://www.uppmax.uu.se/support/user-guides/guide--first-login-to-uppmax/](https://www.uppmax.uu.se/support/user-guides/guide--first-login-to-uppmax/).
 3. Clone the contents of the course repository using git. This puts a subfolder `sesegpu` into your current directory:
 
-       git clone https://github.com/cnettel/scicompuu.git
+       git clone https://github.com/scicompuu/sesegpu.git
 4. Some large files (container images) associated to the course are found in a different directory. Verify that you can access them:
 
         ls /proj/g2020014/nobackup/private
@@ -44,14 +44,19 @@ We are concerned with performance in this course. The single reason to use GPUs 
 
         %time model.fit(x_train, y_train, epochs=5)
 3. Note these timing results. You will be comparing it to other options.
-4. If everything worked correctly (check the output from the first code section), these calculations were done on a Snowy GPU. We will now try doing them in CPU mode instead.
-5. Close your existing notebook and related ssh forwarding sessions.
-6. Start a new notebook with the command `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-mkl`. This will launch the notebook on a node with shorter job queues (unless they are full, you can try dropping `-p devcore`), but most importantly NOT requesting a GPU. In addition, we will use a build of tensorflow using the [Intel Math Kernel Library](https://software.intel.com/content/www/us/en/develop/tools/math-kernel-library.html), which is supposed to optimize the core linear algebra operations a lot.
-7. Run the timings with this setting. Are they similar to what you got before?
-8. In the example above, we asked for 4 core (`-n 4`). Redo the full thing with 8 or even 16 cores instead. This gives you 2 or 4 times the computatioanl power. Do the results improve accordingly? (Note, you can enqueue multiple notebook jobs with different settings in different windows.)
-9. There is also a default setup of TensorFlow available. Launch it using `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-pip`. How do these results compare to those on the GPU, and those with MKL? Is the scaling to more cores than 4 similar?
+4. In the model definition, two lines (Dense and Dropout) are repeated before and after a comment about them being added by UPPMAX. Comment these out. Does the timing change? What dose that tell you about the overhead to run the model, relative to the actual computations?
+5. If everything worked correctly (check the output from the first code section), these calculations were done on a Snowy GPU. We will now try doing them in CPU mode instead.
+6. Close your existing notebook and related ssh forwarding sessions.
+7. Start a new notebook with the command `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-mkl`. This will launch the notebook on a node with shorter job queues (unless they are full, you can try dropping `-p devcore`), but most importantly NOT requesting a GPU. In addition, we will use a build of tensorflow using the [Intel Math Kernel Library](https://software.intel.com/content/www/us/en/develop/tools/math-kernel-library.html), which is supposed to optimize the core linear algebra operations a lot. Do these tests with and without the commented out extra layers.
+8. Run the timings with this setting. Are they similar to what you got before?
+9. In the example above, we asked for 4 core (`-n 4`). Redo the full thing with 8 or even 16 cores instead. This gives you 2 or 4 times the computational power. Do the results improve accordingly? (Note, you can enqueue multiple notebook jobs with different settings in different windows.)
+10. Redo with just one core (`-n 1`).
+11. (extra) There is also a default setup of TensorFlow available. Launch it using `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-pip`. How do these results compare to those on the GPU, and those with MKL? Is the scaling to more cores than 4 similar?
+
+Evidently, this model is very small, so at least a moderately strong GPU has a hard time matching CPU. For many real-life models, there are thousands or millions of activation values to be evaluated in the inner layers, rather than the puny 128 here. However, even in this case, running compute on the GPU means potentially freeing up CPU cores for other tasks -- and there are _no_ programming changes involved in switching between GPU and CPU.
+
 ## Reading materials
-There is far more reference material, tutorials, and examples on the general [TensorFlow](https://www.tensorflow.org/) website. Like any popular programming model, Q&A on StackOverflow and other Internet resources are also popular. Note that there are quite significant differences in the API and programming model between TensorFlow 1 and TensorFlow 2, so be a bit wary if you cannot determine clearly what version you're finding information for -- especially if it is more than a year old. (TF2 was released in September 2019, but the pre-releases were pretty popular before that.)
+There is far more reference material, tutorials, and examples on the general [TensorFlow](https://www.tensorflow.org/) website. Like any popular programming model, Q&A on StackOverflow and other Internet resources are also popular. Note that there are quite significant differences in the API and programming model between TensorFlow 1 and TensorFlow 2, so be a bit wary if you cannot determine clearly what version you're finding information for -- especially if it is more than a year old. (TF2 was released in September 2019, but the pre-releases were pretty popular before that.) You might want to try out a more complex tutorial and time that one as well.
 
 Some very concrete examples for writing your own numerical calculations in TensorFlow can be found on [https://mlfromscratch.com/tensorflow-2/#/](https://mlfromscratch.com/tensorflow-2/#/). Rather than following the insatllation instructions there, you can keep on using Jupyter.
 
