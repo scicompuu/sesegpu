@@ -72,7 +72,7 @@ OpenMP Target changes that. One can add `target` blocks inside the code. Those a
 
         sbatch ./runnogpu.sh cppgpu.sif ./openmptarget
         sbatch -n 16 ./runnogpu.sh cppgpu.sif ./openmptarget
-        sbatch ./runnogpu.sh cppgpu.sif ./openmptarget
+        sbatch ./runongpu.sh cppgpu.sif ./openmptarget
 
 4. The default `runnogpu.sh` uses 4 cores. What performance are you getting for the CPU versions? What about the GPU version? Which job is the fastest?
 5. Repeat this for `openmptarget2.cpp`. Do your results differ?
