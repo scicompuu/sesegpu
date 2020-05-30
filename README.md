@@ -1,6 +1,8 @@
 # sesegpu
 Repository for SeSE course GPU programming for Machine Learning and Data Processing
 
+Zoom room details will only be announced in the Slack channel in the sesegpu workspace.
+
 ## Approximate schedule
 
 ### Monday
@@ -27,4 +29,4 @@ TBA
 15.15 Common brainstorming of project ideas, with feedback from teachers regarding what seems feasible and important aspects to consider.
 
 
-Zoom room details will only be announced in the Slack channel in the sesegpu workspace.
+
