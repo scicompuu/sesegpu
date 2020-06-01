@@ -29,9 +29,11 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 ### Thursday
 Jim Dowling will give the guest lecture.
 
-10.15 First session
+9.15 First session
 
-11.15 Second session
+10.15 Second session
+
+11.15 Third session
 
 12.00 Lunch Break
 
