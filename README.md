@@ -16,10 +16,26 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 13.15 Lab 2,
 
 ### Wednesday
-TBA
+09.15 First session
+
+10.15 Second sessionBreak 15 minutes
+
+11.15 Third session
+
+12.00 Lunch break
+
+13.30 Lab (-17)
 
 ### Thursday
-TBA
+Jim Dowling will give the guest lecture.
+
+10.15 First session
+
+11.15 Second session
+
+12.00 Lunch Break
+
+13:30 Lab (-17)
 
 ### Friday
 10.15 Profiling, debugging, how to approach the project. Ends no alter than 12.00.
