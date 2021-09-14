@@ -18,7 +18,7 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 ### Wednesday
 09.15 First session
 
-10.15 Second sessionBreak 15 minutes
+10.15 Second session
 
 11.15 Third session
 
