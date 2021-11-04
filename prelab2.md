@@ -1,115 +1,67 @@
-# Pre-lab 2
+# Pre-lab 1
 
-The purpose of this lab is to expose you to some of the prevailing ways to write efficient GPU code these days. We're focusing on Nvidia technologies, but considering very hardware-dependent and less tightly coupled alternatives.
+The purpose of this lab is to get your user environment set up, train a simple deep learning model based on a demo and compare its performance in different operating modes.
 
 ## Setup
-1. We assume that you have completed pre-lab 1, so your UPPMAX account etc are in order.
-2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
-         
-       singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
-Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv`flag enabling GPU support), that is fully natural.
+1. First, you need to apply for membership for the UPPMAX HPC course project g2021027  (this is different from the cloud project). Go to [https://supr.snic.se/project/](https://supr.snic.se/project/) and search for the project code g2021027. Apply to join this project. Approval is manual, so this will not happen instantly. There is a guide at [https://www.uppmax.uu.se/support/getting-started/applying-for-a-user-account/](https://www.uppmax.uu.se/support/getting-started/applying-for-a-user-account/) for applying for project membership as well as a user account, if you don't already have one.
+2. Log in to your UPPMAX account on Rackham. In this lab, we will use the Snowy cluster, but it is accessed through the Rackham login nodes. Instructions can be found at [https://www.uppmax.uu.se/support/user-guides/guide--first-login-to-uppmax/](https://www.uppmax.uu.se/support/user-guides/guide--first-login-to-uppmax/).
+3. Clone the contents of the course repository using git. This puts a subfolder `sesegpu` into your current directory:
 
-## Exploring the original code
-First of al, we are going to look at and time a code version using plain C++, with no additional frills. This is short enough that you can run it directly on the login node, you don't have to run a separate job.
-First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/master/data.h) and [plaincpp.cpp](https://github.com/scicompuu/sesegpu/blob/master/plaincpp.cpp). You can do that online or in the local version of the repository that you pulled in the previous lab. You will be compiling the local version soon.
+       git clone https://github.com/scicompuu/sesegpu.git
+4. Some large files (container images) associated to the course are found in a different directory. Verify that you can access them (TODO: check):
 
-1. Do you understand what the code is doing? It is using two third-party open-source libraries, [cnpy](https://github.com/rogersce/cnpy) and [mdspan](https://github.com/kokkos/mdspan), the latter of which is an implementation of a proposed addition to the C++ standard.
-2. Compile the code:
- 
-       singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ plaincpp.cpp -march=sandybridge -O3 -lcnpy -oplaincpp
-3. Run the code directly on the login node:
- 
-       singularity run /proj/g2020014/nobackup/private/cppgpu.sif ./plaincpp
-4. Note the time usage. We also want to run this as a computational job, since our other versions will be running on the Snowy cluster nodes.
+        ls /proj/g2020014/nobackup/private
+5. An HPC environment is a shared resource. You are not supposed to run large computations on the login node where you are currently placed. Rather, you request to run jobs, either executing bash scripts or interactive jobs. We will use both within the course.
+6. We recommend using text-based ssh connections to the login nodes. Some of the work will be done in a web browser anyway. If you want to, you can explore using the graphical [ThinLinc]([https://www.uppmax.uu.se/support-sv/user-guides/thinlinc-graphical-connection-guide/](https://www.uppmax.uu.se/support-sv/user-guides/thinlinc-graphical-connection-guide/)) client to UPPMAX as well, but the ThinLinc resources are limited.
+## Opening Jupyter
+[Jupyter](https://jupyter.org/) is a browser-based environment for running code, including Python. We have provided some scripts that should make it somewhat simple to host a Jupyter environment inside a cluster job.
+Let's test that.
+1. If you are currently in the `sesegpu`subdirectory, it's enough to write:
 
-       sbatch ./runnogpu.sh cppgpu.sif ./plaincpp
-5. This helper script prints the job number. You can check the status for the job by running the following command (insert your job number).
-    
-       scontrol show job 2264714 -M snowy
-       JobId=2264714 JobName=runnogpu.sh
-	   UserId=nettel(40173) GroupId=nobody(43007) MCS_label=N/A
-	   Priority=100000 Nice=0 Account=g2020014 QOS=normal WCKey=*
-	   JobState=COMPLETED Reason=None Dependency=(null)
-	   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
-	   RunTime=00:00:28 TimeLimit=00:59:00 TimeMin=N/A
-	   SubmitTime=2020-05-24T19:33:24 EligibleTime=2020-05-24T19:33:24
-	   AccrueTime=2020-05-24T19:33:24
-	   StartTime=2020-05-24T19:33:25 EndTime=2020-05-24T19:33:53 Deadline=N/A
-	   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2020-05-24T19:33:25
-	   Partition=devcore AllocNode:Sid=rackham2:20464
-	   ReqNodeList=(null) ExcNodeList=(null)
-	   NodeList=s1
-	   BatchHost=s1
-	   NumNodes=1 NumCPUs=4 NumTasks=4 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
-	   TRES=cpu=4,mem=32000M,node=1,billing=4
-	   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
-	   MinCPUsNode=1 MinMemoryCPU=8000M MinTmpDiskNode=0
-	   Features=(null) DelayBoot=00:00:00
-	   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
-	   Command=./runnogpu.sh cppgpu.sif ./plaincpp
-	   WorkDir=/domus/h1/nettel/sesegpu
-	   StdErr=/domus/h1/nettel/sesegpu/slurm-2264714.out
-	   StdIn=/dev/null
-	   StdOut=/domus/h1/nettel/sesegpu/slurm-2264714.out
-	   Power=
-6. The output from the job is thus found in `slurm-2264714.out` (since the job state was `COMPLETED`).
-    
-        cat slurm-22264714.out
-        Loading file /home/nettel/.keras/datasets/mnist.npz
-		...
-7. Note this time usage. You can try what happens if you change the optimization level from `-O3`to `-O0`or other similar changes. This CPU implementation is far from perfect!
+       ./notebook.py
+2. The script adds a job into a queue. Hopefullly, it will start soon. Keep waiting, or do something else while keeping an eye on when the job starts. If you read up, you can also request that the job should start at a specific time, and the queuing system will try to service that request.
+ 3. Now, this script starts a server on a compute node, and it creates a network tunnel. If you are running in e.g. ThinLinc, the script prints a URL you can open directly within that session. Otherwise, you'll need to create a second ssh session. The scripts suggests a command, that you might need to modify slightly (e.g. add your user name) depending on your configuration. Note that the port number (45788) is random and will change every time. You need to match the output from the script.
 
-## OpenMP Target
-OpenMP is a standardized way to express parallelism in code in C/C++/Fortran. The main idea is to rely on the compiler to convert a serial code with loops and other constructs, into a properly distributed code. Originally, OpenMP was designed for homogenous shared-memory systems, i.e. multicore and multi-processor CPU-based machines where all compute cores are essentially equivalent and have access to all memory.
+        ssh rackham3.uppmax.uu.se -L 127.0.0.1:45788:127.0.0.1:45788
+4. The scripts tells you what URL to open. Try it. In this example, it was http://127.0.0.1:45788/?token=341c60678a7c41d8368ef6b70a9ed9df92ef97a54d75729d
+5. While both ssh windows are still open, you can now freely use Jupyter in the browser. Create a new Python3 notebook to try it out.
+6. A prompt is shown, write `print('Hello')` and press Shift + Enter.
+7. The output from the command is visible. In a notebook, you can combine snippets of code and run them zero, one, or many times. You can also add other instructions.
+8. When you're done, press Enter in the original ssh session (where you started `notebook.py`). This ends the session.
+9. (extra) The job will also end automatically after 59 minutes. This is a setting in the job. If you are familiar with Slurm flags, you can add any conventional `sbatch`flag on top of the `./notebook.py`command. For example, you can add `-t 2:00:00`to request a two-hour job instead. If you know when you want to run, you can start queuing a 3-hour job at 2 PM for starting at 3 PM with `-t 3:00:00 -b 15:00`. Note that the ssh tunneling requires the same window to stay open until the job quits.
 
-OpenMP Target changes that. One can add `target` blocks inside the code. Those are possibly compiled to a completely different compute architecture (a different target), which does not necessarily fully share memory with the host. OpenMP Target is thus a reasonable way to write something close to sequential code, and still have part of it executed on the GPU.
+## Some actual deep learning
+Not, it's time to do some deep learning from within Jupyter using [TensorFlow](TensorFlow). You will explore a simple example. It comes from [here]([https://www.tensorflow.org/tutorials/quickstart/beginner](https://www.tensorflow.org/tutorials/quickstart/beginner)), but all the things you need can actually be found inside the Jupyter notebook.
+1. Start a new notebook session with `notebook.py`. This requires you to set up the ssh sessions like we did in he previous section
+2. When you have opened Jupyter successfully in the browser, navigate to the file `beginner.ipynb` in the sidebar to the left.
+3. This is a Jupyter notebook with some introduction text and code snippets. You can run the code sections one by one and watch the results, or you can select Run -> Run All Cells in the menu.
 
-1. Read the two different OpenMP versions of the code [openmptarget.cpp](https://github.com/scicompuu/sesegpu/blob/master/openmptarget.cpp) and [openmptarget2.cpp](https://github.com/scicompuu/sesegpu/blob/master/openmptarget2.cpp). What differences do you see?
-2. Compile the code. We want to compile it for generating GPU code the Tesla T4 cards at UPPMAX, which are Nvidia SM generation 75:
+Right now, we'll just conclude that TensorFlow allows us to formulate very flexible models including a lot of numerical computations in a succinct manner.
+## Time to think about time
+We are concerned with performance in this course. The single reason to use GPUs rather than other computational resources, is to gain their performance. Performance can mean that things go faster, or simply that you waste less electrical power getting them done. Or both...
+1. Open `beginner.ipynb`in Jupyter again (start a new notebook session, if you don't already have one running).
+2. There's a single code section which is actually time consuming here. Even though this model is small, it takes several seconds to train, and if one would want to improve the model, it would take far longer. Change the model fitting line to read:
 
-       singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ openmptarget.cpp -march=sandybridge -O3 -lcnpy -o openmptarget -fopenmp -fopenmp-targets=nvptx64 -Xopenmp-target -march=sm_75
-3. The nice thing is that this binary contains GPU code, but if no GPU is provided, it will run parallel on CPUs as well. Let's test this, and also the GPU version. Start three  jobs and collect their results.
+        %time model.fit(x_train, y_train, epochs=5)
+3. Note these timing results. You will be comparing it to other options.
+4. In the model definition, two lines (Dense and Dropout) are repeated before and after a comment about them being added by UPPMAX. Comment these out. Does the timing change? What dose that tell you about the overhead to run the model, relative to the actual computations?
+5. If everything worked correctly (check the output from the first code section), these calculations were done on a Snowy GPU. We will now try doing them in CPU mode instead.
+6. Close your existing notebook and related ssh forwarding sessions.
+7. Start a new notebook with the command `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-mkl`. This will launch the notebook on a node with shorter job queues (unless they are full, you can try dropping `-p devcore`), but most importantly NOT requesting a GPU. In addition, we will use a build of tensorflow using the [Intel Math Kernel Library](https://software.intel.com/content/www/us/en/develop/tools/math-kernel-library.html), which is supposed to optimize the core linear algebra operations a lot. Do these tests with and without the commented out extra layers.
+8. Run the timings with this setting. Are they similar to what you got before?
+9. In the example above, we asked for 4 core (`-n 4`). Redo the full thing with 8 or even 16 cores instead. This gives you 2 or 4 times the computational power. Do the results improve accordingly? (Note, you can enqueue multiple notebook jobs with different settings in different windows.)
+10. Redo with just one core (`-n 1`).
+11. (extra) There is also a default setup of TensorFlow available. Launch it using `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-pip`. How do these results compare to those on the GPU, and those with MKL? Is the scaling to more cores than 4 similar?
 
-        sbatch ./runnogpu.sh cppgpu.sif ./openmptarget
-        sbatch -n 16 ./runnogpu.sh cppgpu.sif ./openmptarget
-        sbatch ./runongpu.sh cppgpu.sif ./openmptarget
+Evidently, this model is very small, so at least a moderately strong GPU has a hard time matching CPU. For many real-life models, there are thousands or millions of activation values to be evaluated in the inner layers, rather than the puny 128 here. However, even in this case, running compute on the GPU means potentially freeing up CPU cores for other tasks -- and there are _no_ programming changes involved in switching between GPU and CPU.
 
-4. The default `runnogpu.sh` uses 4 cores. What performance are you getting for the CPU versions? What about the GPU version? Which job is the fastest?
-5. Repeat this for `openmptarget2.cpp`. Do your results differ?
-
-The same codebase *can* be used for CPU and GPU, but it's not necessarily optimal for both.
-
-6. If you find yourself waiting a long time to get a GPU job, you can get a single interactive job on the GPU as well and run your GPU codes within that one:
-
-        srun -A g2020014 -t 0:59:00 -p core -n 4 -M snowy --gres=gpu:t4:1 --pty bash
-        ...
-        singularity run --nv /proj/g2020014/nobackup/private/cppgpu.sif ./openmptarget
-
-   Note that you need to specify `--nv`to make the GPU available within the container, as well as specifying the correct `--gres`flag to `srun`.
-## Thrust 
-[Thrust]([https://github.com/thrust/thrust](https://github.com/thrust/thrust)) is a library relying on C++ templates for expressing parallel operations. The point is to (mostly) avoid specyfing *how* to do stuff, but rather express in more high-level terms *what* to accomplish. For example, there are ready-made functions for searching, sorting, and other operations that can be hard to express in a high-performance way on an extremely parallel architecture. If one pays care, the same Thrust code can also be compiled for parallel CPU usage, although this will not be the case in this example.
-
-We will now use another container, `cuda.sif`, which includes a proper library setup for compiling our depencies using the Nvidia compiler `nvcc`.
-1. Compile `thrust.cu`.
-
-       singularity run /proj/g2020014/nobackup/private/cuda.sif nvcc thrust.cu -lcnpy -O3 -std=c++14 -arch=sm_75 -o thrust --expt-relaxed-constexpr -rdc=true -lcudadevrt
-2. Test this new version, either using `sbatch runongpu.sh cuda.sif ./thrust`or by launching an interactive job with `srun`.
-3. Do the same to `thrustmax.cu`. Which version performs better? How do they compare to the other versions we have seen?
-
-## CUDA
-CUDA is the "native" way to do GPU programming on Nvidia GPUs. It's a set of extensons to C++ that allow you to more directly see that these are single instruction multiple thread architectures, where the normal mode of operation is that each a group of threads (called a warp) execute the very same instructions. Warps are ordered into blocks. Each block is then a member of a grid. Even here, we will be using a specific library, [CUB](https://github.com/thrust/cub) to implement some logic for us. CUB is more low-level than Thrust, but has the same idea of helping in synchronizing work, but at a level which more clearly makes blocks, grids and warps transparent to the developer, for better and worse.
-1. Compile cuda.cu:
-
-        singularity run /proj/g2020014/nobackup/private/cuda.sif nvcc cuda.cu -lcnpy -O3 -std=c++14 -arch=sm_75 -o cuda --expt-relaxed-constexpr -rdc=true -lcudadevrt
-2. Run this version as well and time it.
 ## Reading materials
-You can read more in the [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html), although it is quite overwhelming. For OpenMP, the official examples and especially the reference guide found on the [OpenMP website](https://www.openmp.org/specifications/) can be useful (as well as other collections of existing resources). For Thrust you can start with the [Quick Start Guide](https://github.com/thrust/thrust/wiki/Quick-Start-Guide). More [CUB](https://nvlabs.github.io/cub/) information is available as well.
+There is far more reference material, tutorials, and examples on the general [TensorFlow](https://www.tensorflow.org/) website. Like any popular programming model, Q&A on StackOverflow and other Internet resources are also popular. Note that there are quite significant differences in the API and programming model between TensorFlow 1 and TensorFlow 2, so be a bit wary if you cannot determine clearly what version you're finding information for -- especially if it is more than a year old. (TF2 was released in September 2019, but the pre-releases were pretty popular before that.) You might want to try out a more complex tutorial and time that one as well.
 
-## numpy
-There is also an ipython notebook `prelab2.ipynb`. During Lab2 you will try to make this code go faster. Explore why you think it is slow. Since it is currently not using a gpu, you can launch `notebook.py --gres=gpu:t4:0 -p devcore` to get a running job faster.
+Some very concrete examples for writing your own numerical calculations in TensorFlow can be found on [https://mlfromscratch.com/tensorflow-2/#/](https://mlfromscratch.com/tensorflow-2/#/). Rather than following the insatllation instructions there, you can keep on using Jupyter.
 
-WHen you have explored this code, you can decide whether you want to try to implenent that one faster during Lab2, or if you want to explore the C++ based libraries, or if you have some other computation-intensive Python code that you want to try to make faster using GPU-based acceleration. The point is that you should have made up your mind for what code/algorithm you want to explore when Lab2 starts. You need to know the current state of the code, what is making it slow on CPU and what parts you believe should/could be implemented on GPU.
+## Under the hood  (extra)
+Explore the files `notebook.py`and `notebookjob.sh`to see what's really going on. We're using the tool [Singularity](https://sylabs.io/docs/) to pack all the software needed for these three environments in a single file. If you want to, you can copy the file `container.sif` to your local machine and setup Singularity there as well.
+If you would just like to start an interactive command line job inside the software environment on a GPU node, you could write:
 
-## Discussion
-Do the code versions do the same thing? What differences are there? Can you think of any further experiments you would like to test? What's the performance difference between the original CPU version and the fastest version of the code?
- 
+    srun -A g2021027 -t 0:59:00 -p core -n 4 -M snowy --gres=gpu:t4:1 singularity run --nv /proj/g2020014/nobackup/private/container.sif
