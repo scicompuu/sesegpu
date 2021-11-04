@@ -1,11 +1,11 @@
-# Pre-lab 2
+# Pre-lab 3
 
 The purpose of this lab is to expose you to some of the prevailing ways to write efficient GPU code these days. We're focusing on Nvidia technologies, but considering very hardware-dependent and less tightly coupled alternatives.
 
 ## Setup
 1. We assume that you have completed pre-lab 1, so your UPPMAX account etc are in order.
 2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
-         
+
        singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
 Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv`flag enabling GPU support), that is fully natural.
 
@@ -15,16 +15,16 @@ First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/
 
 1. Do you understand what the code is doing? It is using two third-party open-source libraries, [cnpy](https://github.com/rogersce/cnpy) and [mdspan](https://github.com/kokkos/mdspan), the latter of which is an implementation of a proposed addition to the C++ standard.
 2. Compile the code:
- 
+
        singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ plaincpp.cpp -march=sandybridge -O3 -lcnpy -oplaincpp
 3. Run the code directly on the login node:
- 
+
        singularity run /proj/g2020014/nobackup/private/cppgpu.sif ./plaincpp
 4. Note the time usage. We also want to run this as a computational job, since our other versions will be running on the Snowy cluster nodes.
 
        sbatch ./runnogpu.sh cppgpu.sif ./plaincpp
 5. This helper script prints the job number. You can check the status for the job by running the following command (insert your job number).
-    
+
        scontrol show job 2264714 -M snowy
        JobId=2264714 JobName=runnogpu.sh
 	   UserId=nettel(40173) GroupId=nobody(43007) MCS_label=N/A
@@ -53,7 +53,7 @@ First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/
 	   StdOut=/domus/h1/nettel/sesegpu/slurm-2264714.out
 	   Power=
 6. The output from the job is thus found in `slurm-2264714.out` (since the job state was `COMPLETED`).
-    
+
         cat slurm-22264714.out
         Loading file /home/nettel/.keras/datasets/mnist.npz
 		...
@@ -86,7 +86,7 @@ The same codebase *can* be used for CPU and GPU, but it's not necessarily optima
         singularity run --nv /proj/g2020014/nobackup/private/cppgpu.sif ./openmptarget
 
    Note that you need to specify `--nv`to make the GPU available within the container, as well as specifying the correct `--gres`flag to `srun`.
-## Thrust 
+## Thrust
 [Thrust]([https://github.com/thrust/thrust](https://github.com/thrust/thrust)) is a library relying on C++ templates for expressing parallel operations. The point is to (mostly) avoid specyfing *how* to do stuff, but rather express in more high-level terms *what* to accomplish. For example, there are ready-made functions for searching, sorting, and other operations that can be hard to express in a high-performance way on an extremely parallel architecture. If one pays care, the same Thrust code can also be compiled for parallel CPU usage, although this will not be the case in this example.
 
 We will now use another container, `cuda.sif`, which includes a proper library setup for compiling our depencies using the Nvidia compiler `nvcc`.
@@ -112,4 +112,3 @@ WHen you have explored this code, you can decide whether you want to try to impl
 
 ## Discussion
 Do the code versions do the same thing? What differences are there? Can you think of any further experiments you would like to test? What's the performance difference between the original CPU version and the fastest version of the code?
- 

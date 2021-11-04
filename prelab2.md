@@ -1,4 +1,4 @@
-# Pre-lab 1
+# Pre-lab 2
 
 The purpose of this lab is to get your user environment set up, train a simple deep learning model based on a demo and compare its performance in different operating modes.
 
