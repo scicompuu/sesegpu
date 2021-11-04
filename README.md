@@ -1,5 +1,5 @@
 # sesegpu
-Repository for SeSE course GPU programming for Machine Learning and Data Processing (version given in June 2020)
+Repository for SeSE course GPU programming for Machine Learning and Data Processing (version given in November 2021)
 
 This course is a primer in using accelerators, specifically GPUs. In most laptop CPUs these days, the integrated GPU is consuming more silicon space than the rest of the chip, and definitely more than the actual CPU cores (excluding caches). For deep learning-style computations, accelerators like GPUs beat CPU-based implementations hands down, allowing for faster iteration of possible model concepts.
 
@@ -9,48 +9,42 @@ Together with the strong focus on the accelerator programming for machine learni
 
 Zoom room details will only be announced in the Slack channel in the sesegpu workspace.
 
-## Approximate schedule (in June 2020)
+## Approximate schedule
 
 ### Monday
-8.45 Lectures start. GPU vs CPU, deep learning, TensorFlow and Tensorflow contrasted to other frameworks. Ends no later than 12.00 (with breaks).
+09.15 Lecture 1: Introduction to distributed computing infrastructures
 
-13.15 Lab 1
-
-### Tuesday
-8.45 Lectures start. The history of "GPGPU" programming. Current frameworks, focusing on Cuda and OpenMP Target and contrasting those against alternatives. Ends no later than 12.00 (with breaks).
-
-13.15 Lab 2
-
-### Wednesday
-09.15 First session
-
-10.15 Second session
-
-11.15 Third session
+10.45 Lecture 2: Frameworks and strategies for scalable deployments
 
 12.00 Lunch break
 
-13.30 Lab (-17)
+13.30 Lab 1: Implement first cloud service (-17)
 
-### Thursday
-Jim Dowling will give the guest lecture.
+### Tuesday
 
-9.15 First session
-
-10.15 Second session
-
-11.15 Third session
+9.15 Lab 2:     Large-scale model training and serving using Ansible and Kubernetes.
 
 12.00 Lunch Break
 
-13:30 Lab (-17)
+13:30 Lab 2 (-17)
+
+
+### Wednesday
+9.15 Lectures: GPU vs CPU, deep learning, TensorFlow and Tensorflow contrasted to other frameworks. Ends no later than 12.00 (with breaks).
+
+13.15 Lab 3: Using TensorFlow for optimizing two simple models.
+
+### Thursday
+
+9.15 Lecture: The history of "GPGPU" programming. Current frameworks, focusing on Cuda and OpenMP Target and contrasting those against alternatives. Ends no later than 12.00 (with breaks).
+
+13.15 Lab 4: Work on a selected problem (based on examples or prelab) and a framework
+
+
 
 ### Friday
-10.15 Profiling, debugging, how to approach the project. Ends no later than 12.00.
+10.15 Lecture: Profiling, debugging, how to approach the project. Ends no later than 12.00.
 
-13.15 Lab time, for exploring project ideas.
+13.15 Lab 5: Explore project ideas.
 
-15.15 Common brainstorming of project ideas, with feedback from teachers regarding what seems feasible and important aspects to consider.
-
-
-
+15.15 Lecture: Common brainstorming of project ideas, with feedback from teachers regarding what seems feasible and important aspects to consider.
