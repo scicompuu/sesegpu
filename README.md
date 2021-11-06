@@ -12,9 +12,9 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 ## Approximate schedule
 
 ### Monday
-09.15 Lecture 1: Introduction to distributed computing infrastructures
+10.15 Lecture 1: Introduction to distributed computing infrastructures
 
-10.45 Lecture 2: Frameworks and strategies for scalable deployments
+11.15 Lecture 2: Frameworks and strategies for scalable deployments
 
 12.00 Lunch break
 
