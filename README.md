@@ -18,7 +18,7 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 
 12.00 Lunch break
 
-13.30 Lab 1: Implement first cloud service (-17)
+13.30 Lab 1: Implement first cloud service (ends at 16:30)
 
 ### Tuesday
 
@@ -26,7 +26,7 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 
 12.00 Lunch Break
 
-13:30 Lab 2 (-17)
+13:30 Lab 2 (ends at 16:30)
 
 
 ### Wednesday
