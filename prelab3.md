@@ -83,23 +83,23 @@ The same codebase *can* be used for CPU and GPU, but it's not necessarily optima
 
 6. If you find yourself waiting a long time to get a GPU job, you can get a single interactive job on the GPU as well and run your GPU codes within that one:
 
-        srun -A g2020014 -t 0:59:00 -p core -n 4 -M snowy --gres=gpu:t4:1 --pty bash
+        srun -A g2021027 -t 0:59:00 -p core -n 4 -M snowy --gres=gpu:t4:1 --pty bash
         ...
         singularity run --nv /proj/g2020014/nobackup/private/cppgpu.sif ./openmptarget
 
-   Note that you need to specify `--nv`to make the GPU available within the container, as well as specifying the correct `--gres`flag to `srun`.
+   Note that you need to specify `--nv` to make the GPU available within the container, as well as specifying the correct `--gres` flag to `srun`.
 ## Thrust
-[Thrust]([https://github.com/thrust/thrust](https://github.com/thrust/thrust)) is a library relying on C++ templates for expressing parallel operations. The point is to (mostly) avoid specyfing *how* to do stuff, but rather express in more high-level terms *what* to accomplish. For example, there are ready-made functions for searching, sorting, and other operations that can be hard to express in a high-performance way on an extremely parallel architecture. If one pays care, the same Thrust code can also be compiled for parallel CPU usage, although this will not be the case in this example.
+[Thrust]([https://github.com/thrust/thrust](https://github.com/thrust/thrust)) is a library relying on C++ templates for expressing parallel operations. The point is to (mostly) avoid specifying *how* to do stuff, but rather express in more high-level terms *what* to accomplish. For example, there are ready-made functions for searching, sorting, and other operations that can be hard to express in a high-performance way on an extremely parallel architecture. If one pays care, the same Thrust code can also be compiled for parallel CPU usage, although this will not be the case in this example.
 
 We will now use another container, `cuda.sif`, which includes a proper library setup for compiling our depencies using the Nvidia compiler `nvcc`.
 1. Compile `thrust.cu`.
 
        singularity run /proj/g2020014/nobackup/private/cuda.sif nvcc thrust.cu -lcnpy -O3 -std=c++14 -arch=sm_75 -o thrust --expt-relaxed-constexpr -rdc=true -lcudadevrt
-2. Test this new version, either using `sbatch runongpu.sh cuda.sif ./thrust`or by launching an interactive job with `srun`.
+2. Test this new version, either using `sbatch runongpu.sh cuda.sif ./thrust` or by launching an interactive job with `srun`.
 3. Do the same to `thrustmax.cu`. Which version performs better? How do they compare to the other versions we have seen?
 
 ## CUDA
-CUDA is the "native" way to do GPU programming on Nvidia GPUs. It's a set of extensons to C++ that allow you to more directly see that these are single instruction multiple thread architectures, where the normal mode of operation is that each a group of threads (called a warp) execute the very same instructions. Warps are ordered into blocks. Each block is then a member of a grid. Even here, we will be using a specific library, [CUB](https://github.com/thrust/cub) to implement some logic for us. CUB is more low-level than Thrust, but has the same idea of helping in synchronizing work, but at a level which more clearly makes blocks, grids and warps transparent to the developer, for better and worse.
+CUDA is the "native" way to do GPU programming on Nvidia GPUs. It's a set of extensons to C++ that allow you to more directly see that these are single instruction multiple thread architectures, where the normal mode of operation is that all threads in a group (called a warp) execute the very same instructions. Warps are ordered into blocks. Each block is then a member of a grid. Even here, we will be using a specific library, [CUB](https://github.com/thrust/cub) to implement some logic for us. CUB is more low-level than Thrust, but has the same idea of helping in synchronizing work, but at a level which more clearly makes blocks, grids and warps transparent to the developer, for better and worse.
 1. Compile cuda.cu:
 
         singularity run /proj/g2020014/nobackup/private/cuda.sif nvcc cuda.cu -lcnpy -O3 -std=c++14 -arch=sm_75 -o cuda --expt-relaxed-constexpr -rdc=true -lcudadevrt
@@ -108,9 +108,9 @@ CUDA is the "native" way to do GPU programming on Nvidia GPUs. It's a set of ext
 You can read more in the [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html), although it is quite overwhelming. For OpenMP, the official examples and especially the reference guide found on the [OpenMP website](https://www.openmp.org/specifications/) can be useful (as well as other collections of existing resources). For Thrust you can start with the [Quick Start Guide](https://github.com/thrust/thrust/wiki/Quick-Start-Guide). More [CUB](https://nvlabs.github.io/cub/) information is available as well.
 
 ## numpy
-There is also an ipython notebook `prelab2.ipynb`. During Lab2 you will try to make this code go faster. Explore why you think it is slow. Since it is currently not using a gpu, you can launch `notebook.py --gres=gpu:t4:0 -p devcore` to get a running job faster.
+There is also an ipython notebook `prelab3.ipynb`. During Lab2 you will try to make this code go faster. Explore why you think it is slow. Since it is currently not using a gpu, you can launch `notebook.py --gres=gpu:t4:0 -p devcore` to get a running job faster.
 
-WHen you have explored this code, you can decide whether you want to try to implenent that one faster during Lab2, or if you want to explore the C++ based libraries, or if you have some other computation-intensive Python code that you want to try to make faster using GPU-based acceleration. The point is that you should have made up your mind for what code/algorithm you want to explore when Lab2 starts. You need to know the current state of the code, what is making it slow on CPU and what parts you believe should/could be implemented on GPU.
+When you have explored this code, you can decide whether you want to try to implenent that one faster during Lab2, or if you want to explore the C++ based libraries, or if you have some other computation-intensive Python code that you want to try to make faster using GPU-based acceleration. The point is that you should have made up your mind for what code/algorithm you want to explore when Lab2 starts. You need to know the current state of the code, what is making it slow on the CPU and what parts you believe should/could be implemented on a GPU.
 
 ## Discussion
 Do the code versions do the same thing? What differences are there? Can you think of any further experiments you would like to test? What's the performance difference between the original CPU version and the fastest version of the code?
