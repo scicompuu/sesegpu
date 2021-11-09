@@ -1,16 +1,16 @@
 # Pre-lab 3
 
-The purpose of this lab is to expose you to some of the prevailing ways to write efficient GPU code these days. We're focusing on Nvidia technologies, but considering very hardware-dependent and less tightly coupled alternatives.
+The purpose of this lab is to expose you to some of the prevailing ways to write efficient GPU code these days. We are focusing on Nvidia technologies, but considering very hardware-dependent and less tightly coupled alternatives.
 
 ## Setup
 1. We assume that you have completed pre-lab 1, so your UPPMAX account etc are in order.
 2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
 
        singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
-Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv` flag enabling GPU support), that is fully natural.
+Like in the previous lab, we are using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we are not running this on a GPU node (and without the Singularity `--nv` flag enabling GPU support), that is fully natural.
 
 ## Exploring the original code
-First of all, we are going to look at and time a code version using plain C++, with no additional frills. This is short enough that you can run it directly on the login node, you don't have to run a separate job.
+First of all, we are going to look at and time a code version using plain C++, with no additional frills. This is short enough that you can run it directly on the login node, you do not have to run a separate job.
 First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/master/data.h) and [plaincpp.cpp](https://github.com/scicompuu/sesegpu/blob/master/plaincpp.cpp). You can do that online or in the local version of the repository that you pulled in the previous lab. You will be compiling the local version soon.
 
 1. Do you understand what the code is doing? It is using two third-party open-source libraries, [cnpy](https://github.com/rogersce/cnpy) and [mdspan](https://github.com/kokkos/mdspan), the latter of which is an implementation of a proposed addition to the C++ standard.
@@ -70,7 +70,7 @@ OpenMP Target changes that. One can add `target` blocks inside the code. Those a
 2. Compile the code. We want to compile it for generating GPU code the Tesla T4 cards at UPPMAX, which are Nvidia SM generation 75:
 
        singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ openmptarget.cpp -march=sandybridge -O3 -lcnpy -o openmptarget -fopenmp -fopenmp-targets=nvptx64 -Xopenmp-target -march=sm_75
-3. The nice thing is that this binary contains GPU code, but if no GPU is provided, it will run parallel on CPUs as well. Let's test this, and also the GPU version. Start three  jobs and collect their results.
+3. The nice thing is that this binary contains GPU code, but if no GPU is provided, it will run parallel on CPUs as well. Let us test this, and also the GPU version. Start three  jobs and collect their results.
 
         sbatch ./runnogpu.sh cppgpu.sif ./openmptarget
         sbatch -n 16 ./runnogpu.sh cppgpu.sif ./openmptarget
@@ -79,7 +79,7 @@ OpenMP Target changes that. One can add `target` blocks inside the code. Those a
 4. The default `runnogpu.sh` uses 4 cores. What performance are you getting for the CPU versions? What about the GPU version? Which job is the fastest?
 5. Repeat this for `openmptarget2.cpp`. Do your results differ?
 
-The same codebase *can* be used for CPU and GPU, but it's not necessarily optimal for both.
+The same codebase *can* be used for CPU and GPU, but it is not necessarily optimal for both.
 
 6. If you find yourself waiting a long time to get a GPU job, you can get a single interactive job on the GPU as well and run your GPU codes within that one:
 
@@ -99,7 +99,7 @@ We will now use another container, `cuda.sif`, which includes a proper library s
 3. Do the same to `thrustmax.cu`. Which version performs better? How do they compare to the other versions we have seen?
 
 ## CUDA
-CUDA is the "native" way to do GPU programming on Nvidia GPUs. It's a set of extensons to C++ that allow you to more directly see that these are single instruction multiple thread architectures, where the normal mode of operation is that all threads in a group (called a warp) execute the very same instructions. Warps are ordered into blocks. Each block is then a member of a grid. Even here, we will be using a specific library, [CUB](https://github.com/thrust/cub) to implement some logic for us. CUB is more low-level than Thrust, but has the same idea of helping in synchronizing work, but at a level which more clearly makes blocks, grids and warps transparent to the developer, for better and worse.
+CUDA is the "native" way to do GPU programming on Nvidia GPUs. It is a set of extensons to C++ that allow you to more directly see that these are single instruction multiple thread architectures, where the normal mode of operation is that all threads in a group (called a warp) execute the very same instructions. Warps are ordered into blocks. Each block is then a member of a grid. Even here, we will be using a specific library, [CUB](https://github.com/thrust/cub) to implement some logic for us. CUB is more low-level than Thrust, but has the same idea of helping in synchronizing work, but at a level which more clearly makes blocks, grids and warps transparent to the developer, for better and worse.
 1. Compile cuda.cu:
 
         singularity run /proj/g2020014/nobackup/private/cuda.sif nvcc cuda.cu -lcnpy -O3 -std=c++14 -arch=sm_75 -o cuda --expt-relaxed-constexpr -rdc=true -lcudadevrt
@@ -113,4 +113,4 @@ There is also an ipython notebook `prelab3.ipynb`. During Lab2 you will try to m
 When you have explored this code, you can decide whether you want to try to implenent that one faster during Lab2, or if you want to explore the C++ based libraries, or if you have some other computation-intensive Python code that you want to try to make faster using GPU-based acceleration. The point is that you should have made up your mind for what code/algorithm you want to explore when Lab2 starts. You need to know the current state of the code, what is making it slow on the CPU and what parts you believe should/could be implemented on a GPU.
 
 ## Discussion
-Do the code versions do the same thing? What differences are there? Can you think of any further experiments you would like to test? What's the performance difference between the original CPU version and the fastest version of the code?
+Do the code versions do the same thing? What differences are there? Can you think of any further experiments you would like to test? What is the performance difference between the original CPU version and the fastest version of the code?
