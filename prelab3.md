@@ -7,16 +7,16 @@ The purpose of this lab is to expose you to some of the prevailing ways to write
 2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
 
        singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
-Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv`flag enabling GPU support), that is fully natural.
+Like in the previous lab, we're using Singularity to provide a consistent software environment. You might get warnings about your home directory being shadowed and not being able to load GPU libraries. This is OK, the directory mapping is working and since we're not running this on a GPU node (and without the Singularity `--nv` flag enabling GPU support), that is fully natural.
 
 ## Exploring the original code
-First of al, we are going to look at and time a code version using plain C++, with no additional frills. This is short enough that you can run it directly on the login node, you don't have to run a separate job.
+First of all, we are going to look at and time a code version using plain C++, with no additional frills. This is short enough that you can run it directly on the login node, you don't have to run a separate job.
 First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/master/data.h) and [plaincpp.cpp](https://github.com/scicompuu/sesegpu/blob/master/plaincpp.cpp). You can do that online or in the local version of the repository that you pulled in the previous lab. You will be compiling the local version soon.
 
 1. Do you understand what the code is doing? It is using two third-party open-source libraries, [cnpy](https://github.com/rogersce/cnpy) and [mdspan](https://github.com/kokkos/mdspan), the latter of which is an implementation of a proposed addition to the C++ standard.
 2. Compile the code:
 
-       singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ plaincpp.cpp -march=sandybridge -O3 -lcnpy -oplaincpp
+       singularity run /proj/g2020014/nobackup/private/cppgpu.sif clang++ plaincpp.cpp -march=sandybridge -O3 -lcnpy -o plaincpp
 3. Run the code directly on the login node:
 
        singularity run /proj/g2020014/nobackup/private/cppgpu.sif ./plaincpp
@@ -25,42 +25,44 @@ First of all, have a look at [data.h](https://github.com/scicompuu/sesegpu/blob/
        sbatch ./runnogpu.sh cppgpu.sif ./plaincpp
 5. This helper script prints the job number. You can check the status for the job by running the following command (insert your job number).
 
-       scontrol show job 2264714 -M snowy
-       JobId=2264714 JobName=runnogpu.sh
-	   UserId=nettel(40173) GroupId=nobody(43007) MCS_label=N/A
-	   Priority=100000 Nice=0 Account=g2020014 QOS=normal WCKey=*
-	   JobState=COMPLETED Reason=None Dependency=(null)
-	   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
-	   RunTime=00:00:28 TimeLimit=00:59:00 TimeMin=N/A
-	   SubmitTime=2020-05-24T19:33:24 EligibleTime=2020-05-24T19:33:24
-	   AccrueTime=2020-05-24T19:33:24
-	   StartTime=2020-05-24T19:33:25 EndTime=2020-05-24T19:33:53 Deadline=N/A
-	   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2020-05-24T19:33:25
-	   Partition=devcore AllocNode:Sid=rackham2:20464
-	   ReqNodeList=(null) ExcNodeList=(null)
-	   NodeList=s1
-	   BatchHost=s1
-	   NumNodes=1 NumCPUs=4 NumTasks=4 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
-	   TRES=cpu=4,mem=32000M,node=1,billing=4
-	   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
-	   MinCPUsNode=1 MinMemoryCPU=8000M MinTmpDiskNode=0
-	   Features=(null) DelayBoot=00:00:00
-	   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
-	   Command=./runnogpu.sh cppgpu.sif ./plaincpp
-	   WorkDir=/domus/h1/nettel/sesegpu
-	   StdErr=/domus/h1/nettel/sesegpu/slurm-2264714.out
-	   StdIn=/dev/null
-	   StdOut=/domus/h1/nettel/sesegpu/slurm-2264714.out
-	   Power=
-6. The output from the job is thus found in `slurm-2264714.out` (since the job state was `COMPLETED`).
+       scontrol show job 5473794 -M snowy
+       JobId=5473794 JobName=runnogpu.sh
+          UserId=martinkr(43077) GroupId=nobody(43077) MCS_label=N/A
+          Priority=100000 Nice=0 Account=g2021027 QOS=normal WCKey=*
+          JobState=COMPLETED Reason=None Dependency=(null)
+          Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+          RunTime=00:00:26 TimeLimit=00:59:00 TimeMin=N/A
+          SubmitTime=2021-11-09T19:50:28 EligibleTime=2021-11-09T19:50:28
+          AccrueTime=2021-11-09T19:50:28
+          StartTime=2021-11-09T19:50:29 EndTime=2021-11-09T19:50:58 Deadline=N/A
+          SuspendTime=None SecsPreSuspend=0 LastSchedEval=2021-11-09T19:50:29
+          Partition=devcore AllocNode:Sid=rackham3:33723
+          ReqNodeList=(null) ExcNodeList=(null)
+          NodeList=s1
+          BatchHost=s1
+          NumNodes=1 NumCPUs=4 NumTasks=4 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
+          TRES=cpu=4,mem=32000M,node=1,billing=4
+          Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+          MinCPUsNode=1 MinMemoryCPU=8000M MinTmpDiskNode=0
+          Features=(null) DelayBoot=00:00:00
+          OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+          Command=./runnogpu.sh cppgpu.sif ./plaincpp
+          WorkDir=/domus/h1/martinkr/teaching/sesegpu
+          StdErr=/domus/h1/martinkr/teaching/sesegpu/slurm-5473794.out
+          StdIn=/dev/null
+          StdOut=/domus/h1/martinkr/teaching/sesegpu/slurm-5473794.out
+          Power=
 
-        cat slurm-22264714.out
-        Loading file /home/nettel/.keras/datasets/mnist.npz
-		...
-7. Note this time usage. You can try what happens if you change the optimization level from `-O3`to `-O0`or other similar changes. This CPU implementation is far from perfect!
+6. The output from the job is thus found in `slurm-5473794.out` (since the job state was `COMPLETED`).
+
+          cat slurm-5473794.out
+          Loading file /home/martinkr/.keras/datasets/mnist.npz
+          ...
+
+7. Note this time usage. You can try what happens if you change the optimization level from `-O3` to `-O0` or other similar changes. This CPU implementation is far from perfect!
 
 ## OpenMP Target
-OpenMP is a standardized way to express parallelism in code in C/C++/Fortran. The main idea is to rely on the compiler to convert a serial code with loops and other constructs, into a properly distributed code. Originally, OpenMP was designed for homogenous shared-memory systems, i.e. multicore and multi-processor CPU-based machines where all compute cores are essentially equivalent and have access to all memory.
+OpenMP is a standardized way to express parallelism in code in C/C++/Fortran. The main idea is to rely on the compiler to convert a serial code with loops and other constructs, into a properly distributed code. Originally, OpenMP was designed for homogenous shared-memory systems, i.e., multicore and multi-processor CPU-based machines where all compute cores are essentially equivalent and have access to all memory.
 
 OpenMP Target changes that. One can add `target` blocks inside the code. Those are possibly compiled to a completely different compute architecture (a different target), which does not necessarily fully share memory with the host. OpenMP Target is thus a reasonable way to write something close to sequential code, and still have part of it executed on the GPU.
 
