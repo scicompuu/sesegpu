@@ -44,7 +44,7 @@ We are concerned with performance in this course. The single reason to use GPUs 
 
         %time model.fit(x_train, y_train, epochs=5)
 3. Note these timing results. You will be comparing it to other options.
-4. In the model definition, two lines (Dense and Dropout) are repeated before and after a comment about them being added by UPPMAX. Comment these out. Does the timing change? What dose that tell you about the overhead to run the model, relative to the actual computations?
+4. In the model definition, two lines (Dense and Dropout) are repeated before and after a comment about them being added by UPPMAX. Comment these out. Does the timing change? What does that tell you about the overhead to run the model, relative to the actual computations?
 5. If everything worked correctly (check the output from the first code section), these calculations were done on a Snowy GPU. We will now try doing them in CPU mode instead.
 6. Close your existing notebook and related ssh forwarding sessions.
 7. Start a new notebook with the command `./notebook.py -n 4 -p devcore --gres=gpu:t4:0 -- tf-mkl`. This will launch the notebook on a node with shorter job queues (unless they are full, you can try dropping `-p devcore`), but most importantly NOT requesting a GPU. In addition, we will use a build of tensorflow using the [Intel Math Kernel Library](https://software.intel.com/content/www/us/en/develop/tools/math-kernel-library.html), which is supposed to optimize the core linear algebra operations a lot. Do these tests with and without the commented out extra layers.
