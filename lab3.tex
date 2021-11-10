@@ -1,0 +1,89 @@
+\input{header.tex}
+
+\title{Lab 3 on Wednesday}
+
+\begin{document}
+
+\begin{frame}{General lab procedure}
+
+  \begin{itemize}
+  \item I will be in Zoom room and discuss your questions on usage of GPUs, the pre-lab 2 and help you with lab 3
+  \item You do not have to stay in the Zoom room all the time
+  \item I will try to notice you on Slack if we are going to discuss something
+    of interest to many people
+  \item Feel free to work on the lab outside the scheduled hours
+  \item We have a reservation on Wednesday -- Friday, as announced in the
+    Slack channel
+    \begin{itemize}
+    \item It will only worked within the announced hours, do not use
+      it outside the scheduled hours as your jobs will not run!
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Lab 3: Conway's Game of Life}
+
+  \begin{itemize}
+  \item Solved on a regular $n \times m$ grid of cells
+  \item Each cell has 8 neighbors (including diagonals)
+    \begin{itemize}
+    \item Each cell can take two values, \code{1/True} or \code{0/False}
+      \begin{itemize}
+      \item Live cell: value 1
+      \item Dead cell: value 0
+      \end{itemize}
+    \end{itemize}
+  \item Evolution from iteration $i-1$ to iteration $i$ defined by current state and neighbors
+    \begin{itemize}
+    \item Any live cell with two or three neighbors survives
+    \item All other live cells die
+      \begin{itemize}
+      \item Less than 2 neighbors: underpopulation
+      \item More than 3 neighbors: overpopulation
+      \end{itemize}
+    \item Any dead cell with exactly three live neighbors becomes a live cell
+    \item All other dead cells stay dead
+    \end{itemize}
+  \item All rules are evaluated based on number of live or dead neighbors in
+    previous iteration step $i-1$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Na\"ive algorithm for Conway's Game of Life}
+
+  \begin{itemize}
+  \item Compute number of live neighbors to each cell on a fixed grid
+    \begin{itemize}
+    \item Possibly with extra term for current cell alive/dead
+    \end{itemize}
+  \item Apply rule based on live/dead status and number of live neighbors
+
+  \item Represent operation as a convolution
+    \begin{itemize}
+    \item Read up on syntax for convolution with TensorFlow
+    \end{itemize}
+  \item Repeat for $N$ generations
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Background}
+
+  \begin{itemize}
+  \item Our algorithm is not an \emph{efficient} way to solve problem
+  \item Hashlife: Use fact that Game of Life is fully deterministic
+    \begin{itemize}
+    \item If a certain patch is identical to some patch seen before, evolution of patch can be predicted
+    \item With some caveats of course
+    \end{itemize}
+  \item We represent state as floating point numbers -- could use narrower, more efficient format
+  \item Data locality from one iteration to next?
+  \item We will not look into this
+  \item \url{https://en.wikipedia.org/wiki/Breeder_(cellular_automaton)}
+    \item \url{https://en.wikipedia.org/wiki/Breeder_(cellular_automaton)\#/media/File:Conways_game_of_life_breeder_animation.gif}
+  \end{itemize}
+
+\end{frame}
+
+\end{document}
