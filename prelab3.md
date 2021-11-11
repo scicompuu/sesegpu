@@ -3,7 +3,7 @@
 The purpose of this lab is to expose you to some of the prevailing ways to write efficient GPU code these days. We are focusing on Nvidia technologies, but considering very hardware-dependent and less tightly coupled alternatives.
 
 ## Setup
-1. We assume that you have completed pre-lab 1, so your UPPMAX account etc are in order.
+1. We assume that you have completed pre-lab 2, so your UPPMAX account etc are in order.
 2. Specifically, we will be using the MNIST dataset in this lab as well. If you are not sure if that was actually downloaded to your home directory, you can run the following command on the login node:
 
        singularity run /proj/g2020014/nobackup/private/container.sif -c ./downloadmnist.py
@@ -108,7 +108,7 @@ CUDA is the "native" way to do GPU programming on Nvidia GPUs. It is a set of ex
 You can read more in the [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html), although it is quite overwhelming. For OpenMP, the official examples and especially the reference guide found on the [OpenMP website](https://www.openmp.org/specifications/) can be useful (as well as other collections of existing resources). For Thrust you can start with the [Quick Start Guide](https://github.com/thrust/thrust/wiki/Quick-Start-Guide). More [CUB](https://nvlabs.github.io/cub/) information is available as well.
 
 ## numpy
-There is also an ipython notebook `prelab3.ipynb`. During Lab2 you will try to make this code go faster. Explore why you think it is slow. Since it is currently not using a gpu, you can launch `notebook.py --gres=gpu:t4:0 -p devcore` to get a running job faster.
+There is also an ipython notebook `prelab3.ipynb`. During Lab 4 you will try to make this code go faster. Explore why you think it is slow. Since it is currently not using a gpu, you can launch `notebook.py --gres=gpu:t4:0 -p devcore` to get a running job faster.
 
 When you have explored this code, you can decide whether you want to try to implenent that one faster during Lab2, or if you want to explore the C++ based libraries, or if you have some other computation-intensive Python code that you want to try to make faster using GPU-based acceleration. The point is that you should have made up your mind for what code/algorithm you want to explore when Lab2 starts. You need to know the current state of the code, what is making it slow on the CPU and what parts you believe should/could be implemented on a GPU.
 
