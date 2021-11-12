@@ -32,19 +32,19 @@ Zoom room details will only be announced in the Slack channel in the sesegpu wor
 ### Wednesday
 9.15 Lectures: GPU vs CPU, deep learning, TensorFlow and Tensorflow contrasted to other frameworks. Ends no later than 12.00 (with breaks).
 
-13.15 Lab 3: Using TensorFlow for optimizing two simple models.
+13.30 Lab 3: Using TensorFlow for optimizing two simple models.
 
 ### Thursday
 
 9.15 Lecture: The history of "GPGPU" programming. Current frameworks, focusing on Cuda and OpenMP Target and contrasting those against alternatives. Ends no later than 12.00 (with breaks).
 
-13.15 Lab 4: Work on a selected problem (based on examples or prelab) and a framework
+13.30 Lab 4: Work on a selected problem (based on examples or prelab) and a framework
 
 
 
 ### Friday
 10.15 Lecture: Profiling, debugging, how to approach the project. Ends no later than 12.00.
 
-13.15 Lab 5: Explore project ideas.
+13.30 Lab 5: Explore project ideas.
 
-15.15 Lecture: Common brainstorming of project ideas, with feedback from teachers regarding what seems feasible and important aspects to consider.
+15.30 Lecture: Common brainstorming of project ideas, with feedback from teachers regarding what seems feasible and important aspects to consider.
